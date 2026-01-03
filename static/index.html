@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BetterPF</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <div class="mode-toggle">
+      <label class="toggle">
+        <input id="compact" type="checkbox" />
+        Compact mode
+      </label>
+      <label class="toggle">
+        <input id="dark" type="checkbox" />
+        Dark mode
+      </label>
+    </div>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">BetterPF</p>
+        <h1>Party Finder, cleaned up</h1>
+        <p class="subhead">
+          Cached listings from xivpf.com, with filters, highlights, and your own
+          rules.
+        </p>
+      </div>
+      <div class="status">
+        <div>
+          <span class="label">Last updated</span>
+          <span id="last-updated">--</span>
+        </div>
+        <div class="refresh">
+          <span class="label">Next refresh</span>
+          <span id="refresh-countdown">--</span>
+          <div class="progress">
+            <div id="refresh-progress" class="progress-bar"></div>
+          </div>
+        </div>
+        <div>
+          <span class="label">Visible</span>
+          <span id="results-count">0</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel controls">
+        <div class="controls-grid">
+          <label>
+            Search
+            <input id="q" placeholder="Duty, creator, description" />
+          </label>
+          <div class="field">
+            <span class="field-label">Data centre</span>
+            <div class="dropdown" data-group="data-centre">
+              <button class="dropdown-toggle" type="button">
+                <span id="data-centre-summary">Any</span>
+              </button>
+              <div class="dropdown-menu" id="data-centre">
+                <label class="check"><input type="checkbox" value="Aether" />Aether</label>
+                <label class="check"><input type="checkbox" value="Crystal" />Crystal</label>
+                <label class="check"><input type="checkbox" value="Primal" />Primal</label>
+                <label class="check"><input type="checkbox" value="Dynamis" />Dynamis</label>
+                <label class="check"><input type="checkbox" value="Chaos" />Chaos</label>
+                <label class="check"><input type="checkbox" value="Light" />Light</label>
+                <label class="check"><input type="checkbox" value="Elemental" />Elemental</label>
+                <label class="check"><input type="checkbox" value="Gaia" />Gaia</label>
+                <label class="check"><input type="checkbox" value="Mana" />Mana</label>
+                <label class="check"><input type="checkbox" value="Meteor" />Meteor</label>
+                <label class="check"><input type="checkbox" value="Materia" />Materia</label>
+                <label class="check"><input type="checkbox" value="Shadow" />Shadow</label>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">PF category</span>
+            <div class="dropdown" data-group="pf-category">
+              <button class="dropdown-toggle" type="button">
+                <span id="pf-category-summary">Any</span>
+              </button>
+              <div class="dropdown-menu" id="pf-category">
+                <label class="check"><input type="checkbox" value="Duty Roulette" />Duty Roulette</label>
+                <label class="check"><input type="checkbox" value="Dungeons" />Dungeons</label>
+                <label class="check"><input type="checkbox" value="Trials" />Trials</label>
+                <label class="check"><input type="checkbox" value="Raids" />Raids</label>
+                <label class="check"><input type="checkbox" value="High-end Duty" />High-end Duty</label>
+                <label class="check"><input type="checkbox" value="PvP" />PvP</label>
+                <label class="check"><input type="checkbox" value="Gold Saucer" />Gold Saucer</label>
+                <label class="check"><input type="checkbox" value="FATEs" />FATEs</label>
+                <label class="check"><input type="checkbox" value="Treasure Hunts" />Treasure Hunts</label>
+                <label class="check"><input type="checkbox" value="The Hunt" />The Hunt</label>
+                <label class="check"><input type="checkbox" value="Gathering Forays" />Gathering Forays</label>
+                <label class="check"><input type="checkbox" value="Deep Dungeons" />Deep Dungeons</label>
+                <label class="check"><input type="checkbox" value="Field Operations" />Field Operations</label>
+                <label class="check"><input type="checkbox" value="V&C Dungeon Finder" />V&amp;C Dungeon Finder</label>
+                <label class="check"><input type="checkbox" value="Other" />Other</label>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-label">Joinable role</span>
+            <div class="dropdown" data-group="joinable-role">
+              <button class="dropdown-toggle" type="button">
+                <span id="joinable-role-summary">Any</span>
+              </button>
+              <div class="dropdown-menu" id="joinable-role">
+                <label class="check"><input type="checkbox" value="Tank" />Tank</label>
+                <label class="check"><input type="checkbox" value="Healer" />Healer</label>
+                <label class="check"><input type="checkbox" value="DPS" />DPS</label>
+              </div>
+            </div>
+          </div>
+          <label>
+            Sort
+            <select id="sort">
+              <option value="duty">Duty</option>
+              <option value="creator">Creator</option>
+              <option value="num_parties">Parties</option>
+              <option value="data_centre">Data centre</option>
+              <option value="pf_category">Category</option>
+              <option value="fetched_at">Fetched</option>
+            </select>
+          </label>
+          <label>
+            Order
+            <select id="order">
+              <option value="asc">Asc</option>
+              <option value="desc">Desc</option>
+            </select>
+          </label>
+        </div>
+        <div class="controls-actions">
+          <button id="apply" class="btn primary">Apply</button>
+          <button id="reset" class="btn ghost">Reset</button>
+        </div>
+      </section>
+
+      <section class="panel rules">
+        <div class="rules-grid">
+          <label>
+            Highlight keywords
+            <input id="highlights" placeholder="fast, chill, parse" />
+          </label>
+          <label>
+            Hide rules
+            <input id="hide-rules" placeholder="ads, gil, rmt" />
+          </label>
+          <label>
+            Mute rules
+            <input id="mute-rules" placeholder="prog, wipe, learning" />
+          </label>
+        </div>
+        <div class="controls-actions">
+          <button id="save-rules" class="btn ghost">Save rules</button>
+        </div>
+      </section>
+
+      <section class="panel saved">
+        <div class="saved-grid">
+          <label>
+            Saved filters
+            <select id="saved-filters"></select>
+          </label>
+          <label>
+            Save current as
+            <input id="save-name" placeholder="Weekend prog" />
+          </label>
+        </div>
+        <div class="controls-actions">
+          <button id="save-filter" class="btn ghost">Save filter</button>
+          <button id="delete-filter" class="btn ghost">Delete saved</button>
+        </div>
+      </section>
+
+      <section class="panel listings">
+        <div id="listings" class="listing-grid"></div>
+      </section>
+    </main>
+
+    <template id="listing-template">
+      <article class="listing-card">
+        <div class="listing-header">
+          <div>
+            <h2 class="listing-duty"></h2>
+            <p class="listing-creator"></p>
+          </div>
+          <span class="badge new">New</span>
+        </div>
+        <div class="listing-meta">
+          <span class="pill centre"></span>
+          <span class="pill category"></span>
+          <span class="pill parties"></span>
+          <span class="pill roles"></span>
+        </div>
+        <p class="listing-desc"></p>
+      </article>
+    </template>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

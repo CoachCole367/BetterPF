@@ -1,0 +1,12 @@
+services:
+  betterpf:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - BETTERPF_DB=/data/betterpf.db
+    volumes:
+      - betterpf-data:/data
+
+volumes:
+  betterpf-data:
