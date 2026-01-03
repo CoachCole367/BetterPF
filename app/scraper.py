@@ -191,6 +191,28 @@ def _parse_num_parties(raw: str):
         return None
 
 
+def _parse_party_composition(node) -> Dict[str, Dict[str, int]]:
+    counts = {
+        "tank": {"filled": 0, "total": 0},
+        "healer": {"filled": 0, "total": 0},
+        "dps": {"filled": 0, "total": 0},
+        "flex": {"filled": 0, "total": 0},
+    }
+    slots = node.select(".party .slot")
+    for slot in slots:
+        classes = set(slot.get("class", []))
+        if "total" in classes:
+            continue
+        role_classes = [role for role in ("tank", "healer", "dps") if role in classes]
+        if not role_classes:
+            continue
+        role = role_classes[0] if len(role_classes) == 1 else "flex"
+        counts[role]["total"] += 1
+        if "filled" in classes:
+            counts[role]["filled"] += 1
+    return counts
+
+
 def _normalize_category(raw: Optional[str]) -> str:
     if not raw:
         return ""
@@ -226,6 +248,7 @@ def fetch_listings() -> List[Dict[str, Any]]:
         joinable_raw = node.get("data-joinable-roles", "")
         world = _text_or_empty(node.select_one(".world .text") or node.select_one(".world"))
         data_centre = WORLD_TO_DC.get(world, data_centre_raw)
+        party_comp = _parse_party_composition(node)
         items.append(
             {
                 "data_centre": data_centre,
@@ -235,6 +258,7 @@ def fetch_listings() -> List[Dict[str, Any]]:
                 "num_parties": _parse_num_parties(node.get("data-num-parties")),
                 "joinable_roles": _parse_roles(joinable_raw),
                 "joinable_roles_raw": joinable_raw,
+                "party_composition": party_comp,
                 "duty": _text_or_empty(node.select_one(".duty")),
                 "creator": _text_or_empty(node.select_one(".creator")),
                 "description": _text_or_empty(node.select_one(".description")),

@@ -340,6 +340,47 @@ select:focus {
   gap: 0.4rem;
 }
 
+.party-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+}
+
+.role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(214, 179, 106, 0.18);
+  border: 1px solid rgba(214, 179, 106, 0.35);
+}
+
+.role-chip.tank {
+  border-color: rgba(86, 140, 198, 0.6);
+  background: rgba(86, 140, 198, 0.18);
+}
+
+.role-chip.healer {
+  border-color: rgba(121, 188, 117, 0.6);
+  background: rgba(121, 188, 117, 0.18);
+}
+
+.role-chip.dps {
+  border-color: rgba(215, 118, 88, 0.6);
+  background: rgba(215, 118, 88, 0.18);
+}
+
+.role-chip.flex {
+  border-color: rgba(188, 164, 121, 0.6);
+  background: rgba(188, 164, 121, 0.18);
+}
+
+.role-count {
+  font-weight: 700;
+}
+
 .pill {
   background: var(--gold-soft);
   color: var(--ink);

@@ -224,6 +224,7 @@ function renderListings(data) {
     root.querySelector(".roles").textContent = item.joinable_roles?.length
       ? item.joinable_roles.join(", ")
       : "Roles N/A";
+    renderPartyRoles(root, item.party_composition);
 
     const desc = item.description || "No description";
     root.querySelector(".listing-desc").innerHTML = highlightText(desc, highlightTerms);
@@ -457,6 +458,16 @@ function updateRefreshUI(label, progress) {
   const barEl = el("refresh-progress");
   if (labelEl) labelEl.textContent = label;
   if (barEl) barEl.style.width = `${Math.round(progress * 100)}%`;
+}
+
+function renderPartyRoles(root, composition) {
+  if (!composition) return;
+  root.querySelectorAll(".role-count").forEach((node) => {
+    const role = node.getAttribute("data-role");
+    const data = composition[role];
+    if (!data) return;
+    node.textContent = `${data.filled}/${data.total}`;
+  });
 }
 
 init();
