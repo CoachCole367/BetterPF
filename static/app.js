@@ -484,6 +484,9 @@ function renderPartySlots(root, slots) {
 
   const filledSlots = slots.filter((slot) => slot.filled);
   const openSlots = slots.filter((slot) => !slot.filled);
+  const roleOrder = { tank: 0, healer: 1, dps: 2, flex: 3 };
+  filledSlots.sort((a, b) => (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9));
+  openSlots.sort((a, b) => (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9));
 
   if (filledSlots.length) {
     const group = document.createElement("div");
