@@ -110,6 +110,10 @@ function matchesRule(item, terms) {
 }
 
 function applyCompactMode() {
+  const grid = document.querySelector(".listing-grid");
+  if (grid) {
+    grid.classList.toggle("compact", state.settings.compact);
+  }
   const cards = document.querySelectorAll(".listing-card");
   cards.forEach((card) => {
     card.classList.toggle("compact", state.settings.compact);
@@ -248,6 +252,7 @@ function renderListings(data) {
   el("results-count").textContent = visibleCount.toString();
   el("last-updated").textContent = data.last_updated || "--";
   scheduleRefreshCountdown(data.last_updated);
+  applyCompactMode();
 }
 
 function bindEvents() {
