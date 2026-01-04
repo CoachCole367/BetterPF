@@ -213,6 +213,28 @@ def _parse_party_composition(node) -> Dict[str, Dict[str, int]]:
     return counts
 
 
+def _parse_party_slots(node) -> List[Dict[str, Any]]:
+    slots_data: List[Dict[str, Any]] = []
+    slots = node.select(".party .slot")
+    for slot in slots:
+        classes = set(slot.get("class", []))
+        if "total" in classes:
+            continue
+        role_classes = [role for role in ("tank", "healer", "dps") if role in classes]
+        role = role_classes[0] if len(role_classes) == 1 else "flex"
+        filled = "filled" in classes
+        title = slot.get("title", "") or ""
+        jobs = [job for job in title.split() if job.strip()]
+        slots_data.append(
+            {
+                "role": role,
+                "filled": filled,
+                "jobs": jobs,
+            }
+        )
+    return slots_data
+
+
 def _normalize_category(raw: Optional[str]) -> str:
     if not raw:
         return ""
@@ -249,6 +271,7 @@ def fetch_listings() -> List[Dict[str, Any]]:
         world = _text_or_empty(node.select_one(".world .text") or node.select_one(".world"))
         data_centre = WORLD_TO_DC.get(world, data_centre_raw)
         party_comp = _parse_party_composition(node)
+        party_slots = _parse_party_slots(node)
         items.append(
             {
                 "data_centre": data_centre,
@@ -259,6 +282,7 @@ def fetch_listings() -> List[Dict[str, Any]]:
                 "joinable_roles": _parse_roles(joinable_raw),
                 "joinable_roles_raw": joinable_raw,
                 "party_composition": party_comp,
+                "party_slots": party_slots,
                 "duty": _text_or_empty(node.select_one(".duty")),
                 "creator": _text_or_empty(node.select_one(".creator")),
                 "description": _text_or_empty(node.select_one(".description")),

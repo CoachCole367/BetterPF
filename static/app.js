@@ -229,6 +229,7 @@ function renderListings(data) {
       ? item.joinable_roles.join(", ")
       : "Roles N/A";
     renderPartyRoles(root, item.party_composition);
+    renderPartySlots(root, item.party_slots);
 
     const desc = item.description || "No description";
     root.querySelector(".listing-desc").innerHTML = highlightText(desc, highlightTerms);
@@ -472,6 +473,28 @@ function renderPartyRoles(root, composition) {
     const data = composition[role];
     if (!data) return;
     node.textContent = `${data.filled}/${data.total}`;
+  });
+}
+
+function renderPartySlots(root, slots) {
+  const container = root.querySelector(".party-slots");
+  if (!container) return;
+  container.innerHTML = "";
+  if (!Array.isArray(slots) || slots.length === 0) return;
+
+  slots.forEach((slot) => {
+    const chip = document.createElement("span");
+    const role = slot.role || "flex";
+    chip.className = `slot-chip ${role} ${slot.filled ? "filled" : "empty"}`;
+    const jobs = Array.isArray(slot.jobs) ? slot.jobs : [];
+    if (slot.filled && jobs.length) {
+      chip.textContent = jobs[0];
+    } else if (!slot.filled && jobs.length) {
+      chip.innerHTML = `<span class="slot-role">${role}</span> ${jobs.join("/")}`;
+    } else {
+      chip.textContent = slot.filled ? role.toUpperCase() : `${role} open`;
+    }
+    container.appendChild(chip);
   });
 }
 
