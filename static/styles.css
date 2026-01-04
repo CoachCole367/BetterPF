@@ -353,6 +353,8 @@ select:focus {
 
 .party-slots {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 0.35rem;
   font-size: 0.72rem;
@@ -397,6 +399,25 @@ select:focus {
 
 .slot-chip .slot-role {
   opacity: 0.7;
+}
+
+.slot-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.slot-group + .slot-group {
+  margin-top: 0.2rem;
+}
+
+.slot-group-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 0.3rem;
 }
 
 .role-chip {

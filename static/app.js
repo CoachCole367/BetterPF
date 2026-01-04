@@ -482,20 +482,52 @@ function renderPartySlots(root, slots) {
   container.innerHTML = "";
   if (!Array.isArray(slots) || slots.length === 0) return;
 
-  slots.forEach((slot) => {
-    const chip = document.createElement("span");
-    const role = slot.role || "flex";
-    chip.className = `slot-chip ${role} ${slot.filled ? "filled" : "empty"}`;
-    const jobs = Array.isArray(slot.jobs) ? slot.jobs : [];
-    if (slot.filled && jobs.length) {
-      chip.textContent = jobs[0];
-    } else if (!slot.filled && jobs.length) {
-      chip.innerHTML = `<span class="slot-role">${role}</span> ${jobs.join("/")}`;
-    } else {
-      chip.textContent = slot.filled ? role.toUpperCase() : `${role} open`;
-    }
-    container.appendChild(chip);
-  });
+  const filledSlots = slots.filter((slot) => slot.filled);
+  const openSlots = slots.filter((slot) => !slot.filled);
+
+  if (filledSlots.length) {
+    const group = document.createElement("div");
+    group.className = "slot-group";
+    const label = document.createElement("span");
+    label.className = "slot-group-label";
+    label.textContent = "Filled";
+    group.appendChild(label);
+    filledSlots.forEach((slot) => {
+      group.appendChild(buildSlotChip(slot));
+    });
+    container.appendChild(group);
+  }
+
+  if (openSlots.length) {
+    const group = document.createElement("div");
+    group.className = "slot-group";
+    const label = document.createElement("span");
+    label.className = "slot-group-label";
+    label.textContent = "Open";
+    group.appendChild(label);
+    openSlots.forEach((slot) => {
+      group.appendChild(buildSlotChip(slot));
+    });
+    container.appendChild(group);
+  }
+}
+
+function buildSlotChip(slot) {
+  const chip = document.createElement("span");
+  const role = slot.role || "flex";
+  chip.className = `slot-chip ${role} ${slot.filled ? "filled" : "empty"}`;
+  const jobs = Array.isArray(slot.jobs) ? slot.jobs : [];
+
+  if (slot.filled && jobs.length) {
+    chip.textContent = jobs[0];
+    chip.title = jobs.join(", ");
+  } else if (!slot.filled && jobs.length) {
+    chip.innerHTML = `<span class="slot-role">${role}</span> open`;
+    chip.title = `Open to: ${jobs.join(", ")}`;
+  } else {
+    chip.textContent = slot.filled ? role.toUpperCase() : `${role} open`;
+  }
+  return chip;
 }
 
 init();
