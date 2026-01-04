@@ -1,15 +1,12 @@
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Set
-import time
+from typing import List, Optional, Set
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Query
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
 
 from app.scraper import fetch_listings
 from app.storage import init_db, load_cache, save_cache
@@ -22,53 +19,6 @@ STATIC_DIR = BASE_DIR / "static"
 
 app = FastAPI(title="BetterPF")
 scheduler = BackgroundScheduler()
-
-RATE_LIMIT_WINDOW_SEC = 60
-RATE_LIMIT_MAX_REQUESTS = 120
-
-
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        response = await call_next(request)
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["Referrer-Policy"] = "no-referrer"
-        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; "
-            "img-src 'self' data:; "
-            "style-src 'self' 'unsafe-inline'; "
-            "script-src 'self'; "
-            "object-src 'none'; "
-            "base-uri 'self'; "
-            "frame-ancestors 'none'"
-        )
-        return response
-
-
-class RateLimitMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app):
-        super().__init__(app)
-        self._requests: Dict[str, List[float]] = {}
-
-    async def dispatch(self, request: Request, call_next):
-        if request.url.path.startswith("/api/"):
-            client = request.client.host if request.client else "unknown"
-            now = time.time()
-            window_start = now - RATE_LIMIT_WINDOW_SEC
-            timestamps = [ts for ts in self._requests.get(client, []) if ts >= window_start]
-            timestamps.append(now)
-            self._requests[client] = timestamps
-            if len(timestamps) > RATE_LIMIT_MAX_REQUESTS:
-                return JSONResponse(
-                    status_code=429,
-                    content={"detail": "Rate limit exceeded"},
-                )
-        return await call_next(request)
-
-
-app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(RateLimitMiddleware)
 
 
 def _parse_list_param(value: Optional[str]) -> Optional[Set[str]]:
@@ -198,7 +148,7 @@ def get_listings(
     since: Optional[str] = Query(default=None),
     sort: Optional[str] = Query(default="duty"),
     order: Optional[str] = Query(default="asc"),
-    limit: int = Query(default=200, ge=1, le=200),
+    limit: int = Query(default=200, ge=1, le=1000),
     offset: int = Query(default=0, ge=0),
 ):
     cache = load_cache()
